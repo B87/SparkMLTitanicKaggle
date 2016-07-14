@@ -5,15 +5,15 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class TitanicInputBean implements Serializable {
+public class TitanicInputTrainingBean implements Serializable {
 	private static final long serialVersionUID = 5841184139219554050L;
 
 	private Integer passengerId;
 	private Double survived;
 	private Integer pClass;
-	private String name;
+	//private String name;
 	private String sex;
-	private Integer age;
+	private Double age;
 	private Integer sibsSp;
 	private Integer pArch;
 	private String ticket;
@@ -39,22 +39,22 @@ public class TitanicInputBean implements Serializable {
 	public void setpClass(Integer pClass) {
 		this.pClass = pClass;
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+//	public String getName() {
+//		return name;
+//	}
+//	public void setName(String name) {
+//		this.name = name;
+//	}
 	public String getSex() {
 		return sex;
 	}
 	public void setSex(String sex) {
 		this.sex = sex;
 	}
-	public Integer getAge() {
+	public Double getAge() {
 		return age;
 	}
-	public void setAge(Integer age) {
+	public void setAge(Double age) {
 		this.age = age;
 	}
 	public Integer getSibsSp() {
