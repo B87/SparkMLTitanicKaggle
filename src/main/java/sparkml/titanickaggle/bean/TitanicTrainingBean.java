@@ -1,11 +1,11 @@
-package sparkml.titanickaggle;
+package sparkml.titanickaggle.bean;
 
 import java.io.Serializable;
 
 import lombok.Data;
 
 @Data
-public class TitanicInputTrainingBean implements Serializable {
+public class TitanicTrainingBean implements Serializable {
 	private static final long serialVersionUID = 5841184139219554050L;
 
 	private Integer passengerId;

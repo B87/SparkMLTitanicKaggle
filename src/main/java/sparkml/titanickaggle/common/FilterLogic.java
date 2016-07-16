@@ -1,9 +1,11 @@
-package sparkml.titanickaggle;
+package sparkml.titanickaggle.common;
 
+import sparkml.titanickaggle.bean.TitanicToPredictBean;
+import sparkml.titanickaggle.bean.TitanicTrainingBean;
 
 public class FilterLogic {
 
-	public static boolean dropNullTrainingValues(TitanicInputTrainingBean bean){
+	public static boolean dropNullTrainingValues(TitanicTrainingBean bean){
 		
 		try{
 			  if (bean.getPassengerId()!=null && bean.getpClass()!=null && bean.getAge()!=null
@@ -17,7 +19,7 @@ public class FilterLogic {
 		return false;
 	}
 	
-	public static boolean dropNullTestingValues(titanicInputToPredictBean bean){
+	public static boolean dropNullTestingValues(TitanicToPredictBean bean){
 		
 		try{
 			  if (bean.getPassengerId()!=null && bean.getpClass()!=null && bean.getAge()!=null

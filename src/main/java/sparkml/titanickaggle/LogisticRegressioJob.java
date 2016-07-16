@@ -19,23 +19,28 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 
 import scala.Tuple2;
+import sparkml.titanickaggle.bean.TitanicToPredictBean;
+import sparkml.titanickaggle.bean.TitanicTrainingBean;
+import sparkml.titanickaggle.bean.UnlabeledPoint;
+import sparkml.titanickaggle.common.FilterLogic;
+import sparkml.titanickaggle.common.ParseLogic;
 
 import org.apache.spark.mllib.evaluation.MulticlassMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 
 
 /**  
- *  This is a simple example of how to solve the recurrent titanic Kaggle competition with the Apache Spark Ml library.
- * 	Is meant to show the different concepts of the API and fit the model using crossvalidation.
+ *  This is a simple example of how to solve the recurrent Titanic Kaggle competition using a LogisticRegression
+ *  from Apache Spark Java API using the cross validation methodology to fit our algorithm.
  * 
  * 	Feel free to fork, improve the code and push back, It will be warmly received.
  * 	Cheers!	
  * 	
- * 	@Author B.
+ * 	@Author B87
  * 
  **/
 
-public class LogisticRegressionFittingFlow implements Serializable {
+public class LogisticRegressioJob implements Serializable {
 	private static final long serialVersionUID = 3046778978425516932L;
 
 	private static JavaSparkContext jsc;
@@ -43,15 +48,15 @@ public class LogisticRegressionFittingFlow implements Serializable {
 	private static String inputpath = "src/main/resources/train.csv";
 	private static String testfilepath = "src/main/resources/test.csv";
 
-	public LogisticRegressionFittingFlow() {
+	public LogisticRegressioJob() {
 		
 		SparkConf conf = new SparkConf().setAppName("SparkTitanicKaggle").setMaster("local[4]");
-		LogisticRegressionFittingFlow.jsc = new JavaSparkContext(conf);
+		LogisticRegressioJob.jsc = new JavaSparkContext(conf);
 		sqlsc = new org.apache.spark.sql.SQLContext(jsc);
 	}
 
 	public static void main(String[] args) {
-		LogisticRegressionFittingFlow lg = new LogisticRegressionFittingFlow();
+		LogisticRegressioJob lg = new LogisticRegressioJob();
 		lg.run();
 	}
 
@@ -59,22 +64,23 @@ public class LogisticRegressionFittingFlow implements Serializable {
 		
 		JavaRDD<String> rawInput = jsc.textFile(inputpath);
 		JavaRDD<String> rawTest = jsc.textFile(testfilepath);
-		JavaRDD<TitanicInputTrainingBean> TrainingBeanRDD = rawInput.map(line -> ParseLogic.parseRawTrainingInput(line));
-		JavaRDD<titanicInputToPredictBean> toPredictBeanRDD = rawTest.map(line -> ParseLogic.parseRawTestingInput(line));
+		JavaRDD<TitanicTrainingBean> TrainingBeanRDD = rawInput.map(line -> ParseLogic.parseRawTrainingInput(line));
+		JavaRDD<TitanicToPredictBean> toPredictBeanRDD = rawTest.map(line -> ParseLogic.parseRawTestingInput(line));
 		
 		/*
 		 *  We'll drop here the columns that contain null values (empty strings in raw text), cause Spark ml algorithms 
 		 *  can't handle them. That could be a think to improve, maybe we are dropping valuable information given the small testing set we have.
 		 */
 		
-		JavaRDD<TitanicInputTrainingBean> filteredTrainingBeanRDD = TrainingBeanRDD.filter(bean -> FilterLogic.dropNullTrainingValues(bean));
-		JavaRDD<titanicInputToPredictBean> filteredTOpREDICTBeanRDD = toPredictBeanRDD.filter(bean -> FilterLogic.dropNullTestingValues(bean));
+		JavaRDD<TitanicTrainingBean> filteredTrainingBeanRDD = TrainingBeanRDD.filter(bean -> FilterLogic.dropNullTrainingValues(bean));
+		JavaRDD<TitanicToPredictBean> filteredTOpREDICTBeanRDD = toPredictBeanRDD.filter(bean -> FilterLogic.dropNullTestingValues(bean));
 		
 		
-		/* 
-		 *  Choose the features you want to use in the LogisticRegression and set them into 
-		 *  Labeled (training and testing set) and Unlabeled (points to predict). 
+		/** 
+		 *  Choose the features you want to use in the LogisticRegression and set them into Labeled (training and testing set) and Unlabeled (points to predict). 
 		 *  We'll split our test into training and testing set as well.
+		 *  
+		 *  @link ParseLogic
 		 */
 		
 		JavaRDD<LabeledPoint>[] splits = filteredTrainingBeanRDD.map(bean -> ParseLogic.parseTrainBean(bean)).randomSplit(new double[] {0.7,0.3}, 125L);
@@ -99,17 +105,14 @@ public class LogisticRegressionFittingFlow implements Serializable {
 		
 		LogisticRegression logisticR = new LogisticRegression().setMaxIter(50);
 		
-
 		CrossValidator crossVal = new CrossValidator().setEstimator(logisticR).setEvaluator(new BinaryClassificationEvaluator());
 		
-		ParamMap[] paramGrid = new ParamGridBuilder().addGrid(logisticR.regParam(), new double[]{0.1, 0.01})
-			    .build();
+		ParamMap[] paramGrid = new ParamGridBuilder().addGrid(logisticR.regParam(), new double[]{0.1, 0.01}).build();
 		
 		crossVal.setEstimatorParamMaps(paramGrid);
 		crossVal.setNumFolds(3);
 		
 		CrossValidatorModel cvModel = crossVal.fit(trainingDF);
-		
 		trainingDF.unpersist();
 		
 		DataFrame testingResults = cvModel.transform(testingDF);

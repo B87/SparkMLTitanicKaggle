@@ -1,4 +1,4 @@
-package sparkml.titanickaggle;
+package sparkml.titanickaggle.common;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,6 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.Row;
+
+import sparkml.titanickaggle.bean.TitanicToPredictBean;
+import sparkml.titanickaggle.bean.TitanicTrainingBean;
+import sparkml.titanickaggle.bean.UnlabeledPoint;
 
 public class ParseLogic {
 
@@ -17,9 +21,9 @@ public class ParseLogic {
 	 * names are dropped in this step. They where complicated to properly format
 	 * to use and irrelevant for the predictions.
 	 */
-	public static TitanicInputTrainingBean parseRawTrainingInput(String line) throws Exception {
+	public static TitanicTrainingBean parseRawTrainingInput(String line) throws Exception {
 		Pattern r = Pattern.compile(pattern);
-		TitanicInputTrainingBean titanicBean = new TitanicInputTrainingBean();
+		TitanicTrainingBean titanicBean = new TitanicTrainingBean();
 		Matcher m = r.matcher(line);
 		if (m.matches()) {
 			String lineParsed = m.group(1).concat("," + m.group(2));
@@ -40,9 +44,9 @@ public class ParseLogic {
 		return titanicBean;
 	}
 	
-	public static titanicInputToPredictBean parseRawTestingInput(String line) throws Exception {
+	public static TitanicToPredictBean parseRawTestingInput(String line) throws Exception {
 		Pattern r = Pattern.compile(pattern);
-		titanicInputToPredictBean titanicBean = new titanicInputToPredictBean();
+		TitanicToPredictBean titanicBean = new TitanicToPredictBean();
 		Matcher m = r.matcher(line);
 		if (m.matches()) {
 			String lineParsed = m.group(1).concat("," + m.group(2));
@@ -81,12 +85,8 @@ public class ParseLogic {
 	 *  the predictions, in the future we'll classify String inputs like the Sex field into Doubles
 	 *  (i.e : 0.0 for male and 1.0 for female) 
 	 */
-	public static LabeledPoint parseTrainBean(TitanicInputTrainingBean bean) {
-		LabeledPoint point = new LabeledPoint(bean.getSurvived(), Vectors.dense(bean.getpClass(),
-																				bean.getAge(),
-																				bean.getSibsSp(),
-																				bean.getpArch(),
-																				bean.getFare()));
+	public static LabeledPoint parseTrainBean(TitanicTrainingBean bean) {
+		LabeledPoint point = new LabeledPoint(bean.getSurvived(), Vectors.dense(bean.getpClass(),bean.getAge(),bean.getSibsSp(),bean.getpArch(),bean.getFare()));
 		return point;
 
 	}
@@ -94,12 +94,8 @@ public class ParseLogic {
 	/*
 	 * 
 	 */
-	public static UnlabeledPoint parseTestBean(titanicInputToPredictBean bean) {
-		UnlabeledPoint point = new UnlabeledPoint(Vectors.dense(bean.getpClass(),
-																bean.getAge(),
-																bean.getSibsSp(),
-																bean.getpArch(),
-																bean.getFare()));
+	public static UnlabeledPoint parseTestBean(TitanicToPredictBean bean) {
+		UnlabeledPoint point = new UnlabeledPoint(Vectors.dense(bean.getpClass(),bean.getAge(),bean.getSibsSp(),bean.getpArch(),bean.getFare()));
 		return point;
 	}
 	

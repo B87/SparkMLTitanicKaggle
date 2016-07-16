@@ -1,4 +1,4 @@
-package sparkml.titanickaggle;
+package sparkml.titanickaggle.bean;
 
 import java.io.Serializable;
 
