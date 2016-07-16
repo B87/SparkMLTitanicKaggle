@@ -7,18 +7,18 @@ import org.apache.spark.mllib.linalg.Vector;
 public class UnlabeledPoint implements Serializable {
 	private static final long serialVersionUID = 9124880550374563946L;
 	
-	private Vector vector;
+	private Vector features;
 
 	public UnlabeledPoint(Vector dense) {
-		this.vector = dense;
+		this.features = dense;
 	}
 
 	public Vector getVector() {
-		return vector;
+		return features;
 	}
 
 	public void setVector(Vector vector) {
-		this.vector = vector;
+		this.features = vector;
 	}
 
 }

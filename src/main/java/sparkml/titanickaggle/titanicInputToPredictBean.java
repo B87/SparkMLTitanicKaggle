@@ -2,7 +2,7 @@ package sparkml.titanickaggle;
 
 import java.io.Serializable;
 
-public class TitanicInputTestingBean implements Serializable {
+public class titanicInputToPredictBean implements Serializable {
 	private static final long serialVersionUID = 7102392052500211686L;
 	
 	private Integer passengerId;

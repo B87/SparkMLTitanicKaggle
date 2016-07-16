@@ -17,7 +17,7 @@ public class FilterLogic {
 		return false;
 	}
 	
-	public static boolean dropNullTestingValues(TitanicInputTestingBean bean){
+	public static boolean dropNullTestingValues(titanicInputToPredictBean bean){
 		
 		try{
 			  if (bean.getPassengerId()!=null && bean.getpClass()!=null && bean.getAge()!=null

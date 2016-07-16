@@ -40,9 +40,9 @@ public class ParseLogic {
 		return titanicBean;
 	}
 	
-	public static TitanicInputTestingBean parseRawTestingInput(String line) throws Exception {
+	public static titanicInputToPredictBean parseRawTestingInput(String line) throws Exception {
 		Pattern r = Pattern.compile(pattern);
-		TitanicInputTestingBean titanicBean = new TitanicInputTestingBean();
+		titanicInputToPredictBean titanicBean = new titanicInputToPredictBean();
 		Matcher m = r.matcher(line);
 		if (m.matches()) {
 			String lineParsed = m.group(1).concat("," + m.group(2));
@@ -94,7 +94,7 @@ public class ParseLogic {
 	/*
 	 * 
 	 */
-	public static UnlabeledPoint parseTestBean(TitanicInputTestingBean bean) {
+	public static UnlabeledPoint parseTestBean(titanicInputToPredictBean bean) {
 		UnlabeledPoint point = new UnlabeledPoint(Vectors.dense(bean.getpClass(),
 																bean.getAge(),
 																bean.getSibsSp(),
